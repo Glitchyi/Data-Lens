@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Converter - Advaithum Pillerum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            margin-bottom: 40px;
+        }
+
+        .upload-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #cbd5e0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .upload-area.drag-over {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .upload-area.uploading {
+            border-color: #667eea;
+            background: #f0fff4;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .upload-info {
+            text-align: center;
+            margin-top: 15px;
+            color: #718096;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result.success {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+
+        .result.error {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            color: #742a2a;
+        }
+
+        .converter-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+
+        .converter-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-status {
+            color: #718096;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .convert-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-section {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .info-section h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .info-section ul {
+            color: #718096;
+            padding-left: 20px;
+        }
+
+        .info-section li {
+            margin-bottom: 10px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Advaith Converter</div>
+        <div class="subtitle">Advaithum Pillerum - Convert your data files to Parquet format</div>
+        
+        <!-- File Upload and Convert Section -->
+        <div class="upload-section">
+            <div class="upload-title">
+                <span class="icon">📁</span>
+                Upload & Convert Your Data Files
+            </div>
+            <div class="upload-area" id="upload-area">
+                <div class="upload-content">
+                    <div class="upload-icon">📤</div>
+                    <p class="upload-text">Drag & drop your CSV or JSON files here</p>
+                    <p class="upload-subtext">Files will be automatically converted to Parquet format</p>
+                    <input type="file" id="file-input" accept=".csv,.json" hidden>
+                </div>
+            </div>
+            <div class="upload-info">
+                <small>Supported formats: CSV, JSON | Max size: 100MB</small>
+            </div>
+            <div class="result" id="upload-result"></div>
+        </div>
+
+        <div class="info-section">
+            <h3>📋 Instructions</h3>
+            <ul>
+                <li><strong>Upload your file:</strong> Click the upload area or drag & drop your CSV or JSON file</li>
+                <li><strong>Automatic conversion:</strong> Your file will be automatically converted to Parquet format</li>
+                <li><strong>Download result:</strong> The converted Parquet file will be saved in the server directory</li>
+                <li><strong>File support:</strong> Currently supports CSV and JSON files up to 100MB</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // File upload functionality
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadResult = document.getElementById('upload-result');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        async function handleFile(file) {
+            // Validate file type
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            
+            if (!['csv', 'json'].includes(fileExtension)) {
+                showUploadResult('error', '❌ Invalid file type. Please upload CSV or JSON files only.');
+                return;
+            }
+
+            // Show uploading and converting state
+            uploadArea.classList.add('uploading');
+            uploadArea.innerHTML = `
+                <div class="upload-content">
+                    <span class="spinner"></span>
+                    <p class="upload-text">Converting ${file.name} to Parquet...</p>
+                    <p class="upload-subtext">Please wait while we process your file</p>
+                </div>
+            `;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/convert-to-parquet', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showUploadResult('success', `
+                        <strong>✅ Conversion Successful!</strong><br>
+                        ${data.message}<br>
+                        <small>
+                            <strong>Input:</strong> ${data.input_file}<br>
+                            <strong>Output:</strong> ${data.output_file}<br>
+                            <strong>Rows converted:</strong> ${data.rows_converted.toLocaleString()}<br>
+                            <strong>Output size:</strong> ${(data.file_size / 1024).toFixed(2)} KB
+                        </small>
+                    `);
+                } else {
+                    showUploadResult('error', `❌ ${data.error}`);
+                }
+            } catch (error) {
+                showUploadResult('error', `❌ Conversion failed: ${error.message}`);
+            } finally {
+                // Reset upload area
+                resetUploadArea();
+            }
+        }
+
+        function showUploadResult(type, message) {
+            uploadResult.className = `result ${type} show`;
+            uploadResult.innerHTML = message;
+            
+            // Auto-hide after 10 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    uploadResult.classList.remove('show');
+                }, 10000);
+            }
+        }
+
+        function resetUploadArea() {
+            uploadArea.classList.remove('uploading');
+            uploadArea.innerHTML = `
+                <div class="upload-content">
+                    <div class="upload-icon">📤</div>
+                    <p class="upload-text">Drag & drop your CSV or JSON files here</p>
+                    <p class="upload-subtext">Files will be automatically converted to Parquet format</p>
+                </div>
+            `;
+        }
+
+        // Add some interactive animations
+        uploadArea.addEventListener('mouseenter', () => {
+            if (!uploadArea.classList.contains('uploading')) {
+                uploadArea.style.transform = 'translateY(-3px)';
+            }
+        });
+        
+        uploadArea.addEventListener('mouseleave', () => {
+            uploadArea.style.transform = 'translateY(0)';
+        });
+    </script>
+</body>
+</html>
