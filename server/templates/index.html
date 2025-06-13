@@ -93,6 +93,30 @@
                 <div id="files-content"></div>
             </div>
         </div>
+
+        <!-- Parquet Processing Section -->
+        <div class="mt-10 bg-amber-50 rounded-2xl p-8 border-2 border-amber-200">
+            <div class="flex items-center gap-3 text-xl font-bold text-gray-700 mb-6">
+                <span class="text-xl">🔍</span>
+                <span>Parquet File Analysis</span>
+            </div>
+            <p class="text-gray-600 mb-6">Generate detailed metadata and analysis for your parquet files using AI-powered summarization.</p>
+            
+            <div id="parquet-files-list" class="hidden">
+                <label for="parquet-select" class="block text-sm font-medium text-gray-700 mb-2">Select a parquet file to analyze:</label>
+                <div class="flex gap-3 mb-4">
+                    <select id="parquet-select" class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Choose a parquet file...</option>
+                    </select>
+                    <button id="process-parquet-btn" disabled class="bg-amber-500 hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                        Analyze File
+                    </button>
+                </div>
+            </div>
+            
+            <div id="analysis-result" class="hidden mt-6"></div>
+            <div id="metadata-viewer" class="hidden mt-6"></div>
+        </div>
     </div>
 
     <script>
@@ -270,17 +294,29 @@
                 <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg bg-white">
             `;
 
+            // Filter parquet files for the analysis section
+            const parquetFiles = data.files.filter(file => file.filename.endsWith('.parquet'));
+            updateParquetFilesList(parquetFiles);
+
             data.files.forEach((file, index) => {
                 const sizeKB = (file.size / 1024).toFixed(2);
                 const date = file.last_modified ? new Date(file.last_modified).toLocaleString() : 'Unknown';
+                const isParquet = file.filename.endsWith('.parquet');
                 
                 html += `
                     <div class="flex justify-between items-center p-4 ${index > 0 ? 'border-t border-gray-100' : ''}">
                         <div class="flex-1">
-                            <h4 class="font-semibold text-gray-800">${file.filename}</h4>
+                            <h4 class="font-semibold text-gray-800 flex items-center gap-2">
+                                ${file.filename}
+                                ${isParquet ? '<span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded">PARQUET</span>' : ''}
+                                ${file.filename.endsWith('_metadata.md') ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">METADATA</span>' : ''}
+                            </h4>
                             <p class="text-sm text-gray-500">Size: ${sizeKB} KB | Modified: ${date}</p>
                         </div>
                         <div class="flex gap-3">
+                            ${file.filename.endsWith('_metadata.md') ? 
+                                `<button onclick="viewMetadata('${file.filename.replace('_metadata.md', '.parquet')}')" 
+                                   class="text-green-600 hover:text-green-800 font-medium">View Metadata</button>` : ''}
                             <a href="${file.download_url}" target="_blank" 
                                class="text-indigo-600 hover:text-indigo-800 font-medium">View</a>
                             <a href="/download/${file.filename}" 
@@ -292,6 +328,163 @@
 
             html += '</div>';
             filesContent.innerHTML = html;
+        }
+
+        // Parquet processing functionality
+        function updateParquetFilesList(parquetFiles) {
+            const parquetSelect = document.getElementById('parquet-select');
+            const parquetFilesList = document.getElementById('parquet-files-list');
+            const processBtn = document.getElementById('process-parquet-btn');
+
+            // Clear existing options
+            parquetSelect.innerHTML = '<option value="">Choose a parquet file...</option>';
+
+            if (parquetFiles.length > 0) {
+                parquetFiles.forEach(file => {
+                    const option = document.createElement('option');
+                    option.value = file.filename;
+                    option.textContent = file.filename;
+                    parquetSelect.appendChild(option);
+                });
+                parquetFilesList.classList.remove('hidden');
+            } else {
+                parquetFilesList.classList.add('hidden');
+            }
+
+            // Enable/disable process button based on selection
+            parquetSelect.addEventListener('change', () => {
+                processBtn.disabled = !parquetSelect.value;
+            });
+        }
+
+        // Process parquet file
+        document.getElementById('process-parquet-btn').addEventListener('click', async () => {
+            const parquetSelect = document.getElementById('parquet-select');
+            const processBtn = document.getElementById('process-parquet-btn');
+            const analysisResult = document.getElementById('analysis-result');
+            const selectedFile = parquetSelect.value;
+
+            if (!selectedFile) return;
+
+            // Show loading state
+            processBtn.textContent = 'Analyzing...';
+            processBtn.disabled = true;
+            analysisResult.classList.remove('hidden');
+            analysisResult.innerHTML = `
+                <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="inline-block w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-blue-800">Analyzing ${selectedFile} with AI-powered summarization...</span>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/process-parquet/${selectedFile}`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    analysisResult.innerHTML = `
+                        <div class="p-6 bg-green-50 rounded-lg border border-green-200">
+                            <h3 class="text-lg font-bold text-green-800 mb-4">✅ Analysis Complete!</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p><strong>Input File:</strong> ${data.input_file}</p>
+                                    <p><strong>Metadata File:</strong> ${data.metadata_file}</p>
+                                </div>
+                                <div>
+                                    <p><strong>Rows:</strong> ${data.rows.toLocaleString()}</p>
+                                    <p><strong>Columns:</strong> ${data.columns}</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex gap-3">
+                                <button onclick="viewMetadata('${selectedFile}')" 
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                                    View Generated Metadata
+                                </button>
+                                <button onclick="refreshFilesList()" 
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                                    Refresh Files List
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    analysisResult.innerHTML = `
+                        <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                            <span class="text-red-800">❌ Analysis failed: ${data.error}</span>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                analysisResult.innerHTML = `
+                    <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                        <span class="text-red-800">❌ Analysis failed: ${error.message}</span>
+                    </div>
+                `;
+            } finally {
+                processBtn.textContent = 'Analyze File';
+                processBtn.disabled = false;
+            }
+        });
+
+        // View metadata functionality
+        async function viewMetadata(parquetFilename) {
+            const metadataViewer = document.getElementById('metadata-viewer');
+            
+            metadataViewer.classList.remove('hidden');
+            metadataViewer.innerHTML = `
+                <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="inline-block w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-blue-800">Loading metadata...</span>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/get-metadata/${parquetFilename}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    metadataViewer.innerHTML = `
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                                <h3 class="text-lg font-bold text-gray-800">📋 ${data.filename}</h3>
+                            </div>
+                            <div class="p-6">
+                                <pre class="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded-lg overflow-x-auto">${data.content}</pre>
+                            </div>
+                            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                                <button onclick="document.getElementById('metadata-viewer').classList.add('hidden')" 
+                                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    metadataViewer.innerHTML = `
+                        <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                            <span class="text-red-800">❌ Failed to load metadata: ${data.error}</span>
+                            <button onclick="document.getElementById('metadata-viewer').classList.add('hidden')" 
+                                    class="ml-4 text-red-600 underline">Close</button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                metadataViewer.innerHTML = `
+                    <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                        <span class="text-red-800">❌ Failed to load metadata: ${error.message}</span>
+                        <button onclick="document.getElementById('metadata-viewer').classList.add('hidden')" 
+                                class="ml-4 text-red-600 underline">Close</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Refresh files list
+        function refreshFilesList() {
+            document.getElementById('list-files-btn').click();
         }
 
         // Add interactive hover effects

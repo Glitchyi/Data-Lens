@@ -8,6 +8,7 @@ import io
 import tempfile
 from datetime import datetime
 from dotenv import load_dotenv
+from utils import process_parquet_file
 
 # Load environment variables from .env file
 load_dotenv()
@@ -190,6 +191,63 @@ def download_file(filename):
         return jsonify({'error': f'File not found or MinIO error: {str(e)}'}), 404
     except Exception as e:
         return jsonify({'error': f'Download failed: {str(e)}'}), 500
+
+@app.route('/process-parquet/<filename>', methods=['POST'])
+def process_parquet_metadata(filename):
+    """Process a parquet file and generate metadata"""
+    try:
+        if not minio_client:
+            return jsonify({'error': 'MinIO storage not available'}), 500
+        
+        # Check if the file exists in the bucket
+        try:
+            minio_client.stat_object(MINIO_BUCKET_NAME, filename)
+        except S3Error:
+            return jsonify({'error': f'File {filename} not found in bucket'}), 404
+        
+        # Process the parquet file
+        result = process_parquet_file(minio_client, MINIO_BUCKET_NAME, filename)
+        
+        if result['status'] == 'success':
+            return jsonify({
+                'message': 'Parquet file processed successfully',
+                'input_file': filename,
+                'metadata_file': result['metadata_file'],
+                'rows': result['rows'],
+                'columns': result['columns'],
+                'summary': result['summary']
+            })
+        else:
+            return jsonify({'error': f'Processing failed: {result["error"]}'}), 500
+            
+    except Exception as e:
+        return jsonify({'error': f'Processing failed: {str(e)}'}), 500
+
+@app.route('/get-metadata/<filename>', methods=['GET'])
+def get_metadata_file(filename):
+    """Get metadata file content for a parquet file"""
+    try:
+        if not minio_client:
+            return jsonify({'error': 'MinIO storage not available'}), 500
+        
+        # Generate metadata filename
+        metadata_filename = os.path.splitext(filename)[0] + "_metadata.md"
+        
+        try:
+            # Get the metadata file from MinIO
+            response = minio_client.get_object(MINIO_BUCKET_NAME, metadata_filename)
+            metadata_content = response.read().decode('utf-8')
+            
+            return jsonify({
+                'filename': metadata_filename,
+                'content': metadata_content
+            })
+            
+        except S3Error:
+            return jsonify({'error': f'Metadata file {metadata_filename} not found'}), 404
+            
+    except Exception as e:
+        return jsonify({'error': f'Failed to retrieve metadata: {str(e)}'}), 500
 
 @app.route('/')
 def hello_world():
