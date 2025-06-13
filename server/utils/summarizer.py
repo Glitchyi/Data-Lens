@@ -4,7 +4,6 @@ import json
 import getpass
 import os
 import tempfile
-from minio import Minio
 import io
 from groq import Groq
 
