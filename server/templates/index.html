@@ -4,252 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Converter - Advaithum Pillerum</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'spin-slow': 'spin 1s linear infinite',
+                    }
+                }
+            }
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo {
-            font-size: 2.5em;
-            font-weight: bold;
-            text-align: center;
-            color: #4a5568;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #718096;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-        }
-
-        .upload-section {
-            margin-bottom: 40px;
-        }
-
-        .upload-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #4a5568;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .upload-area {
-            border: 3px dashed #cbd5e0;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f7fafc;
-        }
-
-        .upload-area:hover {
-            border-color: #667eea;
-            background: #edf2f7;
-        }
-
-        .upload-area.drag-over {
-            border-color: #667eea;
-            background: #e6fffa;
-        }
-
-        .upload-area.uploading {
-            border-color: #667eea;
-            background: #f0fff4;
-        }
-
-        .upload-icon {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-
-        .upload-text {
-            font-size: 1.2em;
-            color: #4a5568;
-            margin-bottom: 10px;
-        }
-
-        .upload-subtext {
-            color: #718096;
-            font-size: 0.9em;
-        }
-
-        .upload-info {
-            text-align: center;
-            margin-top: 15px;
-            color: #718096;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-            transition: all 0.3s ease;
-        }
-
-        .result.show {
-            display: block;
-        }
-
-        .result.success {
-            background: #f0fff4;
-            border: 1px solid #9ae6b4;
-            color: #22543d;
-        }
-
-        .result.error {
-            background: #fed7d7;
-            border: 1px solid #feb2b2;
-            color: #742a2a;
-        }
-
-        .converter-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-            border: 2px solid #e2e8f0;
-        }
-
-        .converter-title {
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #4a5568;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .file-status {
-            color: #718096;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        .convert-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .convert-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .convert-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .info-section {
-            background: #f7fafc;
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
-        }
-
-        .info-section h3 {
-            color: #4a5568;
-            margin-bottom: 15px;
-        }
-
-        .info-section ul {
-            color: #718096;
-            padding-left: 20px;
-        }
-
-        .info-section li {
-            margin-bottom: 10px;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #ffffff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .icon {
-            font-size: 1.2em;
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <div class="container">
-        <div class="logo">Advaith Converter</div>
-        <div class="subtitle">Advaithum Pillerum - Convert your data files to Parquet format</div>
+<body class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-purple-700 p-5">
+    <div class="max-w-4xl mx-auto bg-white/95 backdrop-blur-sm rounded-3xl p-10 shadow-2xl">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-bold text-gray-700 mb-3">Advaith Converter</h1>
+            <p class="text-gray-600 text-lg">Advaithum Pillerum - Convert your data files to Parquet format</p>
+        </div>
         
-        <!-- File Upload and Convert Section -->
-        <div class="upload-section">
-            <div class="upload-title">
-                <span class="icon">📁</span>
-                Upload & Convert Your Data Files
+        <!-- File Upload Section -->
+        <div class="mb-10">
+            <div class="flex items-center gap-3 text-2xl font-bold text-gray-700 mb-6">
+                <span class="text-2xl">📁</span>
+                <span>Upload & Convert Your Data Files</span>
             </div>
-            <div class="upload-area" id="upload-area">
+            
+            <div id="upload-area" class="border-3 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 hover:border-indigo-500 hover:bg-gray-50 bg-gray-50/50">
                 <div class="upload-content">
-                    <div class="upload-icon">📤</div>
-                    <p class="upload-text">Drag & drop your CSV or JSON files here</p>
-                    <p class="upload-subtext">Files will be automatically converted to Parquet format</p>
-                    <input type="file" id="file-input" accept=".csv,.json" hidden>
+                    <div class="text-6xl mb-6">📤</div>
+                    <p class="text-xl text-gray-700 mb-3">Drag & drop your CSV or JSON files here</p>
+                    <p class="text-gray-500">Files will be automatically converted to Parquet format</p>
+                    <input type="file" id="file-input" accept=".csv,.json" class="hidden">
                 </div>
             </div>
-            <div class="upload-info">
-                <small>Supported formats: CSV, JSON | Max size: 100MB</small>
+            
+            <div class="text-center mt-4">
+                <small class="text-gray-500">Supported formats: CSV, JSON | Max size: 100MB</small>
             </div>
-            <div class="result" id="upload-result"></div>
+            
+            <div id="upload-result" class="mt-5 p-4 rounded-xl hidden transition-all duration-300"></div>
         </div>
 
-        <div class="info-section">
-            <h3>📋 Instructions</h3>
-            <ul>
-                <li><strong>Upload your file:</strong> Click the upload area or drag & drop your CSV or JSON file</li>
-                <li><strong>Automatic conversion:</strong> Your file will be automatically converted to Parquet format</li>
-                <li><strong>Download result:</strong> The converted Parquet file will be saved in the server directory</li>
-                <li><strong>File support:</strong> Currently supports CSV and JSON files up to 100MB</li>
+        <!-- Instructions Section -->
+        <div class="mb-10 bg-gray-50 rounded-2xl p-8">
+            <h3 class="flex items-center gap-2 text-xl font-bold text-gray-700 mb-6">
+                <span>📋</span>
+                <span>Instructions</span>
+            </h3>
+            <ul class="space-y-3 text-gray-600">
+                <li class="flex items-start gap-2">
+                    <span class="text-indigo-500 font-bold">•</span>
+                    <span><strong class="text-gray-700">Upload your file:</strong> Click the upload area or drag & drop your CSV or JSON file</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-indigo-500 font-bold">•</span>
+                    <span><strong class="text-gray-700">Automatic conversion:</strong> Your file will be automatically converted to Parquet format</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-indigo-500 font-bold">•</span>
+                    <span><strong class="text-gray-700">MinIO Storage:</strong> The converted Parquet file will be stored in MinIO cloud storage</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-indigo-500 font-bold">•</span>
+                    <span><strong class="text-gray-700">File support:</strong> Currently supports CSV and JSON files up to 100MB</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-indigo-500 font-bold">•</span>
+                    <span><strong class="text-gray-700">View files:</strong> Click "Show Files" below to see all converted files in storage</span>
+                </li>
             </ul>
+        </div>
+
+        <!-- MinIO Files Section -->
+        <div class="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200">
+            <div class="flex items-center gap-3 text-xl font-bold text-gray-700 mb-6">
+                <span class="text-xl">☁️</span>
+                <span>MinIO Storage Files</span>
+            </div>
+            
+            <button id="list-files-btn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 mb-6">
+                Show Files
+            </button>
+            
+            <div id="files-list" class="hidden">
+                <div id="files-content"></div>
+            </div>
         </div>
     </div>
 
@@ -267,16 +109,19 @@
         // Drag and drop functionality
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.classList.add('drag-over');
+            uploadArea.classList.remove('border-gray-300');
+            uploadArea.classList.add('border-indigo-500', 'bg-indigo-50');
         });
 
         uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
+            uploadArea.classList.add('border-gray-300');
+            uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50');
         });
 
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            uploadArea.classList.remove('drag-over');
+            uploadArea.classList.add('border-gray-300');
+            uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50');
             const files = e.dataTransfer.files;
             if (files.length > 0) {
                 handleFile(files[0]);
@@ -300,12 +145,12 @@
             }
 
             // Show uploading and converting state
-            uploadArea.classList.add('uploading');
+            uploadArea.classList.add('border-indigo-500', 'bg-green-50');
             uploadArea.innerHTML = `
                 <div class="upload-content">
-                    <span class="spinner"></span>
-                    <p class="upload-text">Converting ${file.name} to Parquet...</p>
-                    <p class="upload-subtext">Please wait while we process your file</p>
+                    <div class="inline-block w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                    <p class="text-xl text-gray-700 mb-3">Converting ${file.name} to Parquet...</p>
+                    <p class="text-gray-500">Please wait while we process your file</p>
                 </div>
             `;
 
@@ -322,20 +167,24 @@
 
                 if (response.ok) {
                     showUploadResult('success', `
-                        <strong>✅ Conversion Successful!</strong><br>
-                        ${data.message}<br>
-                        <small>
-                            <strong>Input:</strong> ${data.input_file}<br>
-                            <strong>Output:</strong> ${data.output_file}<br>
-                            <strong>Rows converted:</strong> ${data.rows_converted.toLocaleString()}<br>
-                            <strong>Output size:</strong> ${(data.file_size / 1024).toFixed(2)} KB
-                        </small>
+                        <div class="text-green-800">
+                            <strong class="block mb-2">✅ Conversion Successful!</strong>
+                            <p class="mb-3">${data.message}</p>
+                            <div class="text-sm space-y-1">
+                                <p><strong>Input:</strong> ${data.input_file}</p>
+                                <p><strong>Output:</strong> ${data.output_file}</p>
+                                <p><strong>Rows converted:</strong> ${data.rows_converted.toLocaleString()}</p>
+                                <p><strong>Output size:</strong> ${(data.file_size / 1024).toFixed(2)} KB</p>
+                                <p><strong>MinIO Bucket:</strong> ${data.minio_bucket}</p>
+                                <p><strong>Storage URL:</strong> <a href="${data.minio_url}" target="_blank" class="text-indigo-600 hover:text-indigo-800 underline">View in MinIO</a></p>
+                            </div>
+                        </div>
                     `);
                 } else {
-                    showUploadResult('error', `❌ ${data.error}`);
+                    showUploadResult('error', `<span class="text-red-800">❌ ${data.error}</span>`);
                 }
             } catch (error) {
-                showUploadResult('error', `❌ Conversion failed: ${error.message}`);
+                showUploadResult('error', `<span class="text-red-800">❌ Conversion failed: ${error.message}</span>`);
             } finally {
                 // Reset upload area
                 resetUploadArea();
@@ -343,37 +192,119 @@
         }
 
         function showUploadResult(type, message) {
-            uploadResult.className = `result ${type} show`;
+            uploadResult.classList.remove('hidden');
+            uploadResult.classList.add('block');
+            
+            if (type === 'success') {
+                uploadResult.className = 'mt-5 p-4 rounded-xl block bg-green-50 border border-green-200';
+            } else {
+                uploadResult.className = 'mt-5 p-4 rounded-xl block bg-red-50 border border-red-200';
+            }
+            
             uploadResult.innerHTML = message;
             
             // Auto-hide after 10 seconds for success messages
             if (type === 'success') {
                 setTimeout(() => {
-                    uploadResult.classList.remove('show');
+                    uploadResult.classList.add('hidden');
+                    uploadResult.classList.remove('block');
                 }, 10000);
             }
         }
 
         function resetUploadArea() {
-            uploadArea.classList.remove('uploading');
+            uploadArea.classList.remove('border-indigo-500', 'bg-green-50');
+            uploadArea.classList.add('border-gray-300');
             uploadArea.innerHTML = `
                 <div class="upload-content">
-                    <div class="upload-icon">📤</div>
-                    <p class="upload-text">Drag & drop your CSV or JSON files here</p>
-                    <p class="upload-subtext">Files will be automatically converted to Parquet format</p>
+                    <div class="text-6xl mb-6">📤</div>
+                    <p class="text-xl text-gray-700 mb-3">Drag & drop your CSV or JSON files here</p>
+                    <p class="text-gray-500">Files will be automatically converted to Parquet format</p>
                 </div>
             `;
         }
 
-        // Add some interactive animations
+        // MinIO files listing functionality
+        const listFilesBtn = document.getElementById('list-files-btn');
+        const filesList = document.getElementById('files-list');
+        const filesContent = document.getElementById('files-content');
+
+        listFilesBtn.addEventListener('click', async () => {
+            listFilesBtn.textContent = 'Loading...';
+            listFilesBtn.disabled = true;
+            listFilesBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch('/list-files');
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayFiles(data);
+                    filesList.classList.remove('hidden');
+                    listFilesBtn.textContent = 'Refresh Files';
+                } else {
+                    filesContent.innerHTML = `<p class="text-red-600">❌ Error: ${data.error}</p>`;
+                    filesList.classList.remove('hidden');
+                    listFilesBtn.textContent = 'Show Files';
+                }
+            } catch (error) {
+                filesContent.innerHTML = `<p class="text-red-600">❌ Failed to load files: ${error.message}</p>`;
+                filesList.classList.remove('hidden');
+                listFilesBtn.textContent = 'Show Files';
+            } finally {
+                listFilesBtn.disabled = false;
+                listFilesBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        function displayFiles(data) {
+            if (data.files.length === 0) {
+                filesContent.innerHTML = '<p class="text-gray-600">No files found in MinIO storage.</p>';
+                return;
+            }
+
+            let html = `
+                <div class="mb-4 p-4 bg-indigo-50 rounded-lg">
+                    <p class="text-gray-700"><strong>Bucket:</strong> ${data.bucket} | <strong>Total Files:</strong> ${data.total_files}</p>
+                </div>
+                <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg bg-white">
+            `;
+
+            data.files.forEach((file, index) => {
+                const sizeKB = (file.size / 1024).toFixed(2);
+                const date = file.last_modified ? new Date(file.last_modified).toLocaleString() : 'Unknown';
+                
+                html += `
+                    <div class="flex justify-between items-center p-4 ${index > 0 ? 'border-t border-gray-100' : ''}">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800">${file.filename}</h4>
+                            <p class="text-sm text-gray-500">Size: ${sizeKB} KB | Modified: ${date}</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <a href="${file.download_url}" target="_blank" 
+                               class="text-indigo-600 hover:text-indigo-800 font-medium">View</a>
+                            <a href="/download/${file.filename}" 
+                               class="text-indigo-600 hover:text-indigo-800 font-medium">Download</a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            filesContent.innerHTML = html;
+        }
+
+        // Add interactive hover effects
         uploadArea.addEventListener('mouseenter', () => {
-            if (!uploadArea.classList.contains('uploading')) {
-                uploadArea.style.transform = 'translateY(-3px)';
+            if (!uploadArea.innerHTML.includes('animate-spin')) {
+                uploadArea.style.transform = 'translateY(-2px)';
+                uploadArea.classList.add('shadow-lg');
             }
         });
         
         uploadArea.addEventListener('mouseleave', () => {
             uploadArea.style.transform = 'translateY(0)';
+            uploadArea.classList.remove('shadow-lg');
         });
     </script>
 </body>
