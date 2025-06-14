@@ -1,4 +1,4 @@
-# Advaithum-Pillerum_thinknite
+# Data Lens
 
 ## Team Members:
 - Nikhil Joshi (nikhiljoshi@ibm.com)
