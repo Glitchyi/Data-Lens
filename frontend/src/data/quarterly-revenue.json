@@ -1,0 +1,23 @@
+{
+  "title": "Quarterly Revenue Comparison",
+  "type": "bar",
+  "data": {
+    "labels": ["Q1", "Q2", "Q3", "Q4"],
+    "datasets": [
+      {
+        "label": "2024 Revenue (K)",
+        "data": [45, 67, 89, 95],
+        "backgroundColor": "rgba(99, 102, 241, 0.8)",
+        "borderColor": "rgb(99, 102, 241)",
+        "borderWidth": 1
+      },
+      {
+        "label": "2023 Revenue (K)",
+        "data": [38, 52, 71, 78],
+        "backgroundColor": "rgba(168, 85, 247, 0.8)",
+        "borderColor": "rgb(168, 85, 247)",
+        "borderWidth": 1
+      }
+    ]
+  }
+}

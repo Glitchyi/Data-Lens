@@ -1,0 +1,16 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "Backend server for the Data Lens AI platform"
+
+requires-python = ">=3.12"
+dependencies = [
+    "flask==3.0.0",
+    "groq==0.28.0",
+    "minio==7.2.7",
+    "pandas==2.1.4",
+    "pyarrow==14.0.2",
+    "python-dotenv==1.0.0",
+    "requests==2.31.0",
+    "werkzeug==3.0.1",
+]

@@ -19,9 +19,9 @@ app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
 ALLOWED_EXTENSIONS = {'csv', 'json'}
 
 # MinIO Configuration
-MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT', '9.38.73.29:9000')
-MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY', 'ROOTUSER')
-MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY', 'CHANGEME123')
+MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT')
+MINIO_ACCESS_KEY = os.getenv('MINIO_ACCESS_KEY')
+MINIO_SECRET_KEY = os.getenv('MINIO_SECRET_KEY')
 MINIO_BUCKET_NAME = os.getenv('MINIO_BUCKET_NAME', 'parquet-files')
 MINIO_SECURE = os.getenv('MINIO_SECURE', 'False').lower() == 'true'
 
@@ -31,7 +31,7 @@ try:
         MINIO_ENDPOINT,
         access_key=MINIO_ACCESS_KEY,
         secret_key=MINIO_SECRET_KEY,
-        secure=MINIO_SECURE
+        secure=MINIO_SECURE,
     )
     
     # Create bucket if it doesn't exist
